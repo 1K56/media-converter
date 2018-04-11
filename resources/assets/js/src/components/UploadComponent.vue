@@ -9,7 +9,18 @@
     <div 
       v-if="uploadState === 'INITIAL'" 
       class="upload-initial"> 
-      <h1>Drag your file here to upload</h1>
+      <form 
+        action="" 
+        method="POST" 
+        enctype="multipart/form-data">
+        <input 
+          id="media-file-input" 
+          type="file" 
+          name="media"
+          @change="onFileSelected">
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <h1>Drag your file here to upload or <label class="upload-label" for="media-file-input">click here</label></h1>
+      </form>
     </div>
     <div 
       v-if="uploadState === 'UPLOADING'" 
@@ -59,7 +70,15 @@
       }
     },
     methods: {
+      onFileSelected(e) {
+        let selectedFile = e.target.files[0]
+        this.processBeforeUpload(selectedFile)
+      },
       onFileDrop(e) {
+        let droppedFile = e.dataTransfer.files[0]
+        this.processBeforeUpload(droppedFile)
+      },
+      processBeforeUpload(file) {
         this.draggedOver = false
 
         if(this.uploadState === UPLOADING) {
@@ -69,9 +88,7 @@
         this.CancelToken = axios.CancelToken
         this.source = this.CancelToken.source()
 
-        let droppedFile = e.dataTransfer.files[0]
-
-        this.validateFile(droppedFile)
+        this.validateFile(file)
 
         if(this.errors.length > 0) {
           this.uploadState = ERROR
@@ -79,9 +96,11 @@
         }
 
         let formData = new FormData()
-        formData.append('media', droppedFile)
+        formData.append('media', file)
+
         this.upload(formData, this.CancelToken.source())
           .then(this.onFileUploaded)
+
       },
       upload(formData) {
         this.uploadState = UPLOADING
@@ -167,5 +186,14 @@
 
   .dragged-over {
     transform: scale(1.1, 1.1);
+  }
+
+  #media-file-input {
+    display: none;
+  }
+
+  .upload-label {
+    text-decoration: underline;
+    color: cyan;
   }
 </style> 
