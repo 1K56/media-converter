@@ -23,21 +23,22 @@
       </form>
     </div>
     <div 
-      v-if="uploadState === 'UPLOADING'" 
+      v-else-if="uploadState === 'UPLOADING'" 
       class="upload-uploading">
       <h1>uploading</h1>
     </div>
     <div 
-      v-if="uploadState === 'SUCCESSFUL'" 
+      v-else-if="uploadState === 'SUCCESSFUL'" 
       class="upload-successful">
       <h1>Upload successful</h1>
     </div>
     <div 
-      v-if="uploadState === 'ERROR'" 
+      v-else-if="uploadState === 'ERROR'" 
       class="upload-error">
       <h1 
         v-for="(error, index) in errors" 
-        :key="index">
+        :key="index"
+        class="upload-error-message">
         {{ error }}
       </h1>
     </div>
@@ -98,9 +99,11 @@
         let formData = new FormData()
         formData.append('media', file)
 
-        this.upload(formData, this.CancelToken.source())
+        return this.upload(formData)
           .then(this.onFileUploaded)
-
+          .catch((error) => {
+            throw new Error(error)
+          })
       },
       upload(formData) {
         this.uploadState = UPLOADING
