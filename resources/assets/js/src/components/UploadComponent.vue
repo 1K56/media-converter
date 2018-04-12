@@ -30,7 +30,12 @@
             v-else-if="uploadState === 'UPLOADING'" 
             key="uploading"
             class="upload-uploading text-white bg-info">
-            <h2>uploading</h2>
+            <div class="rp">
+              <progress-component 
+                :progress-total="uploadTotal"
+                :progress-loaded="uploadLoaded"
+                class="upload-progress"/>
+            </div>
           </div>
           <div 
             v-else-if="uploadState === 'SUCCESSFUL'" 
@@ -59,6 +64,7 @@
 
 <script>
   import axios from 'axios'
+  import ProgressComponent from './ProgressComponent'
 
   const UPLOADING = 'UPLOADING'
   const INITIAL = 'INITIAL'
@@ -66,13 +72,16 @@
   const ERROR = 'ERROR'
 
   export default {
+    components: {
+      ProgressComponent
+    },
     data() {
       return {
         errors: null,
         uploadState: INITIAL,
         draggedOver: false,
-        uploadLoaded: null,
-        uploadTotal: null,
+        uploadLoaded: 0,
+        uploadTotal: 0,
         allowedFileTypes: [
           'video/webm',
           'video/mp4'
@@ -236,7 +245,24 @@
     text-decoration: underline;
   }
 
-  
+  .rp {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .upload-progress {
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    position: absolute;
+    height: 10px;
+    width: 60%;
+  }
+
+  .upload-progress > .progress-bar{
+    background: #333;
+  }
 
   .fade-enter-active, .fade-leave-active {
     transition: opacity .2s;
