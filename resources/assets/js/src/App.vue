@@ -1,11 +1,13 @@
 <template>
-  <div>
-    <h1>hello</h1>
-    <video 
-      :src="mediaSource"
-      autoplay 
-      loop />
+  <div class="container">
     <upload-component @mediaUploaded="onMediaUploaded" />
+    <div class="row">
+      <video 
+        :src="mediaSource"
+        autoplay
+        loop
+        muted />
+    </div>
   </div>
 </template>
 

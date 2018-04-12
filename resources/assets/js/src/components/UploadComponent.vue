@@ -1,46 +1,58 @@
 <template>
-  <div 
-    :class="{'dragged-over' : draggedOver}"
-    class="upload-container" 
-    @drop.prevent.stop="onFileDrop"
-    @dragover.prevent.stop
-    @dragenter.prevent.stop="draggedOver = true"
-    @dragleave.prevent.stop="draggedOver = false">
-    <div 
-      v-if="uploadState === 'INITIAL'" 
-      class="upload-initial"> 
-      <form 
-        action="" 
-        method="POST" 
-        enctype="multipart/form-data">
-        <input 
-          id="media-file-input" 
-          type="file" 
-          name="media"
-          @change="onFileSelected">
-        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-        <h1>Drag your file here to upload or <label class="upload-label" for="media-file-input">click here</label></h1>
-      </form>
-    </div>
-    <div 
-      v-else-if="uploadState === 'UPLOADING'" 
-      class="upload-uploading">
-      <h1>uploading</h1>
-    </div>
-    <div 
-      v-else-if="uploadState === 'SUCCESSFUL'" 
-      class="upload-successful">
-      <h1>Upload successful</h1>
-    </div>
-    <div 
-      v-else-if="uploadState === 'ERROR'" 
-      class="upload-error">
-      <h1 
-        v-for="(error, index) in errors" 
-        :key="index"
-        class="upload-error-message">
-        {{ error }}
-      </h1>
+  <div class="upload-component-row row justify-content-md-center">
+    <div class="upload-column col-md-8">
+      <div 
+        :class="{'dragged-over' : draggedOver}"
+        class="upload-container rounded" 
+        @drop.prevent.stop="onFileDrop"
+        @dragover.prevent.stop
+        @dragenter.prevent.stop="draggedOver = true"
+        @dragleave.prevent.stop="draggedOver = false">
+        <transition name="fade">
+          <div 
+            v-if="uploadState === 'INITIAL'" 
+            key="initial"
+            class="upload-initial text-white bg-primary"> 
+            <form 
+              action="" 
+              method="POST" 
+              enctype="multipart/form-data">
+              <input 
+                id="media-file-input" 
+                type="file" 
+                name="media"
+                @change="onFileSelected">
+              <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+              <h2>Drag your file here to upload or <label class="upload-label" for="media-file-input">click here</label></h2>
+            </form>
+          </div>
+          <div 
+            v-else-if="uploadState === 'UPLOADING'" 
+            key="uploading"
+            class="upload-uploading text-white bg-info">
+            <h2>uploading</h2>
+          </div>
+          <div 
+            v-else-if="uploadState === 'SUCCESSFUL'" 
+            key="successful"
+            class="upload-successful text-white bg-success">
+            <h2>Upload successful!</h2>
+          </div>
+          <div 
+            v-else-if="uploadState === 'ERROR'" 
+            key="error"
+            class="upload-error text-white bg-danger">
+            <ul>
+              <li 
+                v-for="(error, index) in errors" 
+                :key="index"
+                class="upload-error-message">
+                {{ error }}
+              </li>
+            </ul>
+          </div>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
@@ -159,32 +171,57 @@
 </script>
 
 <style>
+  .upload-component-row {
+    margin-top: 50px;
+  }
+
   .upload-container {
     margin: 0 auto;
-    width: 400px;
-    height: 200px;
+    height: 250px;
     overflow: hidden;
+    position: relative;
+    transition: transform 0.2s;
   }
 
   .upload-container > div {
     width: 100%;
     height: 100%;
+    position: absolute;
+    text-align: center;
+  }
+
+  .upload-container > div h2 {
+    line-height: 250px;
   }
 
   .upload-initial {
-    background: blue;
   }
 
   .upload-uploading {
-    background: cyan;
   }
 
   .upload-successful {
-    background: green;
   }
 
-  .upload-error {
-    background: red;
+  .upload-error ul {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    padding: 0;
+    width: 70%;
+    text-align: center;
+    list-style: none;
+    font-size: 20px;
+  }
+
+  .upload-error ul li:first-child {
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ff8989;
+  }
+
+  .upload-error ul li:last-child {
+    padding-top: 10px;
   }
 
   .dragged-over {
@@ -197,6 +234,14 @@
 
   .upload-label {
     text-decoration: underline;
-    color: cyan;
+  }
+
+  
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style> 
