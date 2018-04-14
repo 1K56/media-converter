@@ -28,6 +28,11 @@
           @user-seek="onUserSeek"
           @user-start-seek="onUserStartSeek"
           @user-stop-seek="onUserStopSeek"/>
+        <seekable-progress-component
+          id="volume-control"
+          :progress-loaded="mediaVolume"
+          :progress-total="1"
+          @user-seek="onUserChangedVolume"/>
       </div>
     </div>
   </div>
@@ -57,6 +62,7 @@ export default {
       containerWidth: 0,
       mediaLength: 0,
       mediaCurrentPosition: 0,
+      mediaVolume: 0
     }
   },
   computed: {
@@ -87,8 +93,7 @@ export default {
       this.$refs.media.play()
     },
     onUserSeek(pos){
-      this.mediaCurrentPosition = this.mediaLength * pos
-      this.$refs.media.currentTime = this.mediaCurrentPosition
+      this.mediaCurrentPosition = this.$refs.media.currentTime = this.mediaLength * pos
     },
     setContainerDimensions() {
       this.containerWidth = this.$refs.mediaContainer.clientWidth
@@ -99,6 +104,10 @@ export default {
     },
     onMetaDataLoaded(e) {
       this.mediaLength = e.target.duration
+      this.mediaVolume = e.target.volume
+    },
+    onUserChangedVolume(pos) {
+      this.mediaVolume = this.$refs.media.volume = pos
     }
   },
 }
@@ -128,17 +137,23 @@ export default {
     width: 100%;
     background: #eee;
   }
+
   .controls > * {
     float: left;
   }
+
   .toggle-playback {
     width: 40px;
     height: 40px;
     position: relative;
   }
 
+  #volume-control {
+    width: 100px;
+  }
+
   .media-playback-progress {
-    width: calc(100% - 40px);
+    width: calc(100% - 140px);
     height: 100%;
     position: relative;
   }
@@ -163,7 +178,8 @@ export default {
     transform: translateX(-50%) translateY(-50%);
   }
 
-  #media-progress .progress-bar {
+  #media-progress .progress-bar, 
+  #volume-control .progress-bar {
     transition: width 0.1s !important;
   }
 </style>

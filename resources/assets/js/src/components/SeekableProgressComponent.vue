@@ -32,6 +32,11 @@ export default {
       default: 0
     } 
   },
+  data() {
+    return {
+      seeking: false
+    }
+  },
   mounted() {
     let clickableArea = this.$refs.clickableArea
 
