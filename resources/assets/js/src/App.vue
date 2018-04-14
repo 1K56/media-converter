@@ -1,21 +1,20 @@
 <template>
   <div class="container">
     <upload-component @mediaUploaded="onMediaUploaded" />
-    <div class="row">
-      <video 
-        :src="mediaSource"
-        autoplay
-        loop
-        muted />
+    <div class="row justify-content-md-center">
+      <playback-component :media-source="mediaSource" />
     </div>
   </div>
 </template>
 
 <script>
 import UploadComponent from './components/UploadComponent'
+import PlaybackComponent from './components/PlaybackComponent'
+
 export default {
   components: {
-    UploadComponent 
+    UploadComponent,
+    PlaybackComponent
   },
   data() {
     return {
