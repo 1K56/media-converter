@@ -1,7 +1,7 @@
 <template>
   <div class="progress">
     <div 
-      :style="{ width: (100*(progressLoaded / progressTotal)) + '%'}"
+      :style="{ width: calculatedProgress}"
       class="progress-bar" 
       role="progressbar" 
       aria-valuenow="0" 
@@ -24,6 +24,11 @@ export default {
       default: 0
     } 
   },
+  computed: {
+    calculatedProgress() {
+      return (100*(this.progressLoaded / this.progressTotal)) + '%'
+    }
+  }
 }
 </script>
 

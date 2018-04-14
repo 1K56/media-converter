@@ -20,19 +20,14 @@
         <div class="toggle-playback">
           <i>a</i>
         </div>
-        <div class="media-playback-progress">
-          <div 
-            ref="clickableArea"
-            class="progress-clickable-area"
-            @mousedown="startSeeking">
-            <div class="rp">
-              <progress-component
-                id="media-progress"
-                :progress-loaded="mediaCurrentPosition"
-                :progress-total="mediaLength"/>
-            </div>
-          </div>
-        </div>
+        <seekable-progress-component
+          id="media-progress"
+          :progress-loaded="mediaCurrentPosition"
+          :progress-total="mediaLength"
+          class="media-playback-progress"
+          @user-seek="onUserSeek"
+          @user-start-seek="onUserStartSeek"
+          @user-stop-seek="onUserStopSeek"/>
       </div>
     </div>
   </div>
@@ -40,10 +35,12 @@
 
 <script>
 import ProgressComponent from './ProgressComponent'
+import SeekableProgressComponent from './SeekableProgressComponent'
 
 export default {
   components: {
-    ProgressComponent
+    ProgressComponent,
+    SeekableProgressComponent
   },
   props: {
     mediaSource: {
@@ -60,7 +57,6 @@ export default {
       containerWidth: 0,
       mediaLength: 0,
       mediaCurrentPosition: 0,
-      seeking: false
     }
   },
   computed: {
@@ -76,62 +72,22 @@ export default {
     }
   },
   mounted() {
-    let clickableArea = this.$refs.clickableArea
-
     window.addEventListener('resize', () => {
       this.setContainerDimensions()
-    })
-
-    window.addEventListener('mouseup', () => {
-      if(this.seeking){
-        this.stopSeeking()
-      }
-    })
-
-    document.body.addEventListener('mousemove', (e) => {
-      if(!this.seeking) {
-        return
-      }
-
-      let elPosX = clickableArea.getBoundingClientRect().left
-      let mousePosX = e.pageX 
-
-      var relativeMousePosX = mousePosX - elPosX
-
-      if (relativeMousePosX > clickableArea.clientWidth) {
-        relativeMousePosX = clickableArea.clientWidth
-      }
-      
-      if (relativeMousePosX < 0) {
-        relativeMousePosX = 0
-      }
-
-      this.seek({offsetX: relativeMousePosX})
     })
   },
   destroyed() {
     window.removeEventListener('resize')
-    window.removeEventListener('mouseup')
-    document.body.removeEventListener('mousemove')
   },
   methods: {
-    startSeeking(e) {
-      if(!this.mediaSource) {
-        return
-      }
-      this.seeking = true
+    onUserStartSeek() {
       this.$refs.media.pause()
-      this.seek(e)
     },
-    stopSeeking() {
-      this.seeking = false
+    onUserStopSeek() {
       this.$refs.media.play()
     },
-    seek(e) {
-      if (!this.seeking) {
-        return
-      }
-      this.mediaCurrentPosition = this.mediaLength * (e.offsetX/this.$refs.clickableArea.clientWidth)
+    onUserSeek(pos){
+      this.mediaCurrentPosition = this.mediaLength * pos
       this.$refs.media.currentTime = this.mediaCurrentPosition
     },
     setContainerDimensions() {
