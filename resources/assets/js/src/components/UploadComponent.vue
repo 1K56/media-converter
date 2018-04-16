@@ -1,64 +1,60 @@
 <template>
-  <div class="upload-component-row row justify-content-md-center">
-    <div class="upload-column col-md-8">
+  <div 
+    :class="{'dragged-over' : draggedOver}"
+    class="upload-container" 
+    @drop.prevent.stop="onFileDrop"
+    @dragover.prevent.stop
+    @dragenter.prevent.stop="draggedOver = true"
+    @dragleave.prevent.stop="draggedOver = false">
+    <transition name="fade">
       <div 
-        :class="{'dragged-over' : draggedOver}"
-        class="upload-container rounded" 
-        @drop.prevent.stop="onFileDrop"
-        @dragover.prevent.stop
-        @dragenter.prevent.stop="draggedOver = true"
-        @dragleave.prevent.stop="draggedOver = false">
-        <transition name="fade">
-          <div 
-            v-if="uploadState === 'INITIAL'" 
-            key="initial"
-            class="upload-initial text-white bg-primary"> 
-            <form 
-              action="" 
-              method="POST" 
-              enctype="multipart/form-data">
-              <input 
-                id="media-file-input" 
-                type="file" 
-                name="media"
-                @change="onFileSelected">
-              <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-              <h2>Drag your file here to upload or <label class="upload-label" for="media-file-input">click here</label></h2>
-            </form>
-          </div>
-          <div 
-            v-else-if="uploadState === 'UPLOADING'" 
-            key="uploading"
-            class="upload-uploading text-white bg-info">
-            <div class="rp">
-              <progress-component 
-                :progress-total="uploadTotal"
-                :progress-loaded="uploadLoaded"
-                class="upload-progress"/>
-            </div>
-          </div>
-          <div 
-            v-else-if="uploadState === 'SUCCESSFUL'" 
-            key="successful"
-            class="upload-successful text-white bg-success">
-            <h2>Upload successful!</h2>
-          </div>
-          <div 
-            v-else-if="uploadState === 'ERROR'" 
-            key="error"
-            class="upload-error text-white bg-danger">
-            <ul>
-              <li 
-                v-for="(error, index) in errors" 
-                :key="index"
-                class="upload-error-message">
-                {{ error }}
-              </li>
-            </ul>
-          </div>
-        </transition>
+        v-if="uploadState === 'INITIAL'" 
+        key="initial"
+        class="upload-initial text-white bg-primary"> 
+        <form 
+          action="" 
+          method="POST" 
+          enctype="multipart/form-data">
+          <input 
+            id="media-file-input" 
+            type="file" 
+            name="media"
+            @change="onFileSelected">
+          <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+          <h2>Drag your file here to upload or <label class="upload-label" for="media-file-input">click here</label></h2>
+        </form>
       </div>
-    </div>
+      <div 
+        v-else-if="uploadState === 'UPLOADING'" 
+        key="uploading"
+        class="upload-uploading text-white bg-info">
+        <div class="rp">
+          <progress-component 
+            :progress-total="uploadTotal"
+            :progress-loaded="uploadLoaded"
+            class="upload-progress"/>
+        </div>
+      </div>
+      <div 
+        v-else-if="uploadState === 'SUCCESSFUL'" 
+        key="successful"
+        class="upload-successful text-white bg-success">
+        <h2>Upload successful!</h2>
+      </div>
+      <div 
+        v-else-if="uploadState === 'ERROR'" 
+        key="error"
+        class="upload-error text-white bg-danger">
+        <ul>
+          <li 
+            v-for="(error, index) in errors" 
+            :key="index"
+            class="upload-error-message">
+            {{ error }}
+          </li>
+        </ul>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -234,7 +230,6 @@
   }
 
   .dragged-over {
-    transform: scale(1.1, 1.1);
   }
 
   #media-file-input {
@@ -259,9 +254,10 @@
   }
 
   .fade-enter-active, .fade-leave-active {
-    transition: opacity .2s;
+    transition: opacity 0.7s;
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
   }
+  
 </style> 
