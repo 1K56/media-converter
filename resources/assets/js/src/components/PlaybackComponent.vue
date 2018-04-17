@@ -1,11 +1,13 @@
 <template>
   <div class="playback-container">
-    <transition name="fade">
-      <upload-component 
-        v-if="showUpload"
-        @mediaUploaded="onMediaUploaded"/>
-    </transition>
+    <tabs-component 
+      :external-active-tab-id="activeTabId"
+      @tabChange="onTabChange"/>
+    <upload-component 
+      v-visible="activeTabId === 1"
+      @mediaUploaded="onMediaUploaded"/>
     <div 
+      v-visible="activeTabId === 2"
       ref="mediaContainer"
       class="video-container">
       <div class="video-overlay" />
@@ -40,15 +42,15 @@
 </template>
 
 <script>
-import ProgressComponent from './ProgressComponent'
 import UploadComponent from './UploadComponent'
 import SeekableProgressComponent from './SeekableProgressComponent'
+import TabsComponent from './TabsComponent'
 
 export default {
   components: {
-    ProgressComponent,
     SeekableProgressComponent,
-    UploadComponent
+    UploadComponent,
+    TabsComponent
   },
   props: {
     mediaSource: {
@@ -68,7 +70,8 @@ export default {
       mediaCurrentPosition: 0,
       mediaVolume: 0,
       mediaEl: null,
-      ms: null
+      ms: null,
+      activeTabId: 1
     }
   },
   computed: {
@@ -119,7 +122,11 @@ export default {
     },
     onMediaUploaded(path) {
       this.ms = path
+      this.activeTabId = 2
       this.showUpload = false
+    },
+    onTabChange(tabId) {
+      this.activeTabId = tabId
     }
   }
 }
@@ -130,6 +137,12 @@ export default {
     background: #000;
     position: relative;
     z-index: 1;
+    margin-top: 80px;
+  }
+
+  .tabs {
+    transform: translateY(-100%);
+    position: absolute;
   }
 
   .playback-container .upload-container {
