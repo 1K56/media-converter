@@ -15,8 +15,8 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.use(require('vue-visible'))
 Vue.component('App', require('./src/App.vue'));
-
 const app = new Vue({
     el: '#app',
     template: '<App/>'

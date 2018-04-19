@@ -1,6 +1,5 @@
 <template>
   <div 
-    :class="{'dragged-over' : draggedOver}"
     class="upload-container" 
     @drop.prevent.stop="onFileDrop"
     @dragover.prevent.stop
@@ -10,6 +9,7 @@
       <div 
         v-if="uploadState === 'INITIAL'" 
         key="initial"
+        :class="{'dragged-over' : draggedOver}"
         class="upload-initial text-white bg-primary"> 
         <form 
           action="" 
@@ -84,7 +84,8 @@
         ],
         maxFileSize: 4194304,
         CancelToken: null,
-        source: null
+        source: null,
+        successScreenTimer: null
       }
     },
     methods: {
@@ -94,6 +95,7 @@
       },
       onFileDrop(e) {
         let droppedFile = e.dataTransfer.files[0]
+        clearTimeout(this.successScreenTimer)
         this.processBeforeUpload(droppedFile)
       },
       processBeforeUpload(file) {
@@ -137,9 +139,9 @@
         if(res.data.status === 'success') {
           this.uploadState = SUCCESSFUL
           this.$emit('mediaUploaded', res.data.path)
-          setTimeout(() => { 
+          this.successScreenTimer = setTimeout(() => { 
             this.uploadState = INITIAL
-          }, 5000)
+          }, 2000)
         } else {
           this.uploadState = ERROR
         }
@@ -197,15 +199,7 @@
 
   .upload-container > div h2 {
     line-height: 250px;
-  }
-
-  .upload-initial {
-  }
-
-  .upload-uploading {
-  }
-
-  .upload-successful {
+    transition: transform 0.1s ease;
   }
 
   .upload-error ul {
@@ -229,7 +223,8 @@
     padding-top: 10px;
   }
 
-  .dragged-over {
+  .dragged-over h2 {
+    transform: scale(1.1, 1.1)
   }
 
   #media-file-input {
